@@ -6,6 +6,7 @@ describe "Runner" do
 	let(:arrival_city) {"Z"}
 
 	it "gets the cases from the flight parser" do 
+		expect(File).to receive(:open)
 		expect(FlightRouteCalculator).to receive(:get_cases) {[1, 1]}
 		expect(FlightRouteCalculator).to receive(:find_all_flight_paths).twice
 		expect(FlightRouteCalculator).to receive(:get_cheapest_flight).twice
