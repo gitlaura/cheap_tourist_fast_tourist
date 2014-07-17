@@ -15,7 +15,7 @@ describe "Flight route calc" do
 	end
 
 	it "finds the best flights for each case" do 
-		expect(FlightRouteCalculator).to respond_to(:find_best_flights)
+		expect(FlightRouteCalculator).to respond_to(:find_all_flight_paths)
 	end
 
 	it "finds the cheapest flight" do 
@@ -28,11 +28,8 @@ describe "Flight route calc" do
 		expect(best_flight).to eq(flight_one)
 	end
 
-	it "write to a file" do 
-		output_file = FlightRouteCalculator.write_to_file([flight_one, flight_two])
-		read_file = File.open(output_file).read
-		read_file.each_line do |line|
-			expect(line.start_with?("09:00 10:00 100.00")).to eq(true)
-		end
+	it "formats the flights for print" do 
+		line_to_print = FlightRouteCalculator.get_print_format([flight_two, flight_three])
+		expect(line_to_print).to include("10:00 12:00 300.00\n\n")
 	end
 end
