@@ -10,7 +10,7 @@ class FlightRouteCalculator
 		end
 
 		def find_all_flight_paths(flight_case, departure_city, arrival_city)
-			AllPaths.create(flight_case, departure_city, arrival_city)
+			AllPaths.new(flight_case, departure_city, arrival_city).create_paths
 		end
 
 		def get_cheapest_flight(all_flight_paths)

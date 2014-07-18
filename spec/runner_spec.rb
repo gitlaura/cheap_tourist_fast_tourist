@@ -18,9 +18,9 @@ describe "Runner" do
 
 	it "writes to a file" do 
 		temp_output = StringIO.new
-		Runner.write_to_file("Hi, I'm Laura", temp_output)
+		Runner.write_to_file("testing stuff", temp_output)
 		temp_output.each_line do |line|
-			expect(line).to eq("Hi, I'm Laura")
+			expect(line).to eq("tesing stuff")
 		end
 	end
 end
