@@ -17,7 +17,9 @@ class AllPaths
 				else
 					@current_path = create_new_path(flight_from_dep_city)
 					reset_price(flight_from_dep_city)
-					update_current_path(flight_from_dep_city, from_city_groups)
+					reset_arrivals(flight_from_dep_city)
+					reset_arrival_cities(flight_from_dep_city)
+					update_current_path(flight_from_dep_city.to, from_city_groups)
 				end
 			end
 			@final_paths
@@ -36,7 +38,7 @@ class AllPaths
 		private
 
 		def create_new_path(flight)
-			OpenStruct.new(:from => @departure_city, :to => flight.to, :dep => flight.dep, :arr => flight.arr, :price => nil)
+			OpenStruct.new(:from => @departure_city, :to => nil, :dep => flight.dep, :arr => nil, :price => nil)
 		end
 
 		def reset_price(flight)
@@ -44,44 +46,89 @@ class AllPaths
 			@prices << flight.price
 		end
 
-		def update_current_path(current_flight, from_city_groups)
-			new_from_city = current_flight.to.to_sym
+		def reset_arrivals(flight)
+			@arrival_times = []
+			@arrival_times << flight.arr
+		end
+
+		def reset_arrival_cities(flight)
+			@arrival_cities = []
+			@arrival_cities << flight.to
+		end
+
+		def update_current_path(current_from_city, from_city_groups, loop = false)
+			new_from_city = current_from_city.to_sym
 			from_city_groups[new_from_city].each do |possible_flight|
-				if valid_next_flight?(current_flight, possible_flight)
-					update_path(possible_flight)
+				if loop == false 
+					reset_to_price_from_city if @prices.size > 1
+					reset_arrivals_from_city if @arrival_times.size > 1
+					reset_arrival_cities_from_city if @arrival_cities.size > 1
+				end
+				if valid_next_flight?(possible_flight)
+					#update_path(possible_flight)
 					update_price(possible_flight)
-					if @current_path.to == @arrival_city
+					update_arrivals(possible_flight)
+					update_arrival_cities(possible_flight)
+					if possible_flight.to == @arrival_city
 						add_prices_to_path
+						add_arrivals_to_path(possible_flight)
+						add_arrival_cities_to_path(possible_flight)
 						reset_to_price_from_city
-						add_current_path_to_final_paths
-						return @final_paths
+						reset_arrivals_from_city
+						reset_arrival_cities_from_city
+						add_current_path_to_final_paths(possible_flight)
+						next
 					end
-					update_current_path(@current_path, from_city_groups)
+					update_current_path(@arrival_cities.last, from_city_groups, true)
 				end
 			end
 		end	
 
-		def valid_next_flight?(current_flight, possible_flight)
-			current_flight.to == possible_flight.from && current_flight.arr < possible_flight.dep && possible_flight.to > possible_flight.from
+		def valid_next_flight?(possible_flight)
+			@arrival_times.last < possible_flight.dep && possible_flight.to > possible_flight.from
 		end
 
 		def update_path(possible_flight)
-			@current_path.to, @current_path.arr = possible_flight.to, possible_flight.arr
+			@current_path.to = possible_flight.to if possible_flight.to != @arrival_city
 		end
 
 		def update_price(possible_flight)
 			@prices << possible_flight.price		
 		end
 
+		def update_arrivals(possible_flight)
+			@arrival_times << possible_flight.arr		
+		end
+
+		def update_arrival_cities(possible_flight)
+			@arrival_cities << possible_flight.to		
+		end
+
 		def add_prices_to_path
 			@current_path.price = @prices.reduce(:+)
 		end
 
-		def reset_to_price_from_city
-			@prices = [@prices[0]]
+		def add_arrivals_to_path(possible_flight)
+			@current_path.arr = @arrival_times.last
 		end
 
-		def add_current_path_to_final_paths
+		def add_arrival_cities_to_path(possible_flight)
+			@current_path.to = @arrival_cities.last
+		end
+
+		def reset_to_price_from_city
+			@prices.pop
+		end
+
+		def reset_arrivals_from_city
+			@arrival_times.pop
+		end
+
+		def reset_arrival_cities_from_city
+			@arrival_cities.pop
+		end
+
+		def add_current_path_to_final_paths(possible_flight)
 			end_path = @current_path.dup
 			@final_paths << end_path
 		end
