@@ -6,7 +6,7 @@ describe "Best flights" do
 	let(:flight_three){OpenStruct.new(:from => "A", :to => "Z", :dep => 600, :arr => 720, :price => 300.00)}
 	let(:case_one){[flight_one, flight_two, flight_three]}
 	
-	it "gets the cheapest flight" do
+	it "gets the cheapest flight if they're equally cheap" do
 		best_flight = BestFlights.get_cheapest_flight(case_one)
 		expect(best_flight).to eq(flight_one)
 	end

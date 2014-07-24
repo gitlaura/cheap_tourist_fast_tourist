@@ -1,6 +1,6 @@
 require_relative 'lib/runner.rb'
 
-flights_to_parse = "sample-input.txt"
+flights_to_parse = "input.txt"
 departure_city = "A"
 arrival_city = "Z"
 

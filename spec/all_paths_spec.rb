@@ -20,6 +20,7 @@ describe "All paths" do
 	
 	let(:departure_city){"A"}
 	let(:arrival_city){"Z"}
+	let(:all_paths){AllPaths.new([flight_one, flight_five], departure_city, arrival_city)}
 
 	it "gets the correct paths for just two flights" do 
 		all_flights = [flight_one, flight_five]
@@ -55,8 +56,23 @@ describe "All paths" do
 		all_flights = [flight_one, flight_two, flight_three, flight_four, flight_five, flight_six, flight_seven, flight_eight]
 		all_paths_class = AllPaths.new(all_flights, departure_city, arrival_city)
 
-		all_froms = all_paths_class.group_flights_by_from_city
+		all_froms = all_paths_class.group_flights_by_departure_city
 		
 		expect(all_froms[:A]).to eq([flight_one, flight_two, flight_three])
+	end
+
+	it "creates a new path" do 
+		path = all_paths.create_new_path(flight_one)
+
+		expect(path.from).to eq(flight_one.from)
+		expect(path.to).to eq(nil)
+		expect(path.dep).to eq(flight_one.dep)
+		expect(path.arr).to eq(nil)
+		expect(path.price).to eq(nil)
+	end
+
+	it "resets path attributes" do
+		path_attributes = all_paths.reset_path_attributes(flight_one)
+		expect(path_attributes).to eq({:prices =>[50],:arrival_times => [540],:arrival_cities => ["B"]})
 	end
 end

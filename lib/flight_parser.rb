@@ -3,8 +3,7 @@ require 'ostruct'
 class FlightParser
 	class << self
 		def parse(txt_file)
-			@all_flights = []
-			@all_cases = []
+			all_cases = []
 			flights_created = 0
 
 			file = File.open(txt_file).read
@@ -19,10 +18,10 @@ class FlightParser
 					from, to, dep, arr, price = line.strip.split(" ")
 					@new_case << create_flight(from, to, dep, arr, price)
 					flights_created += 1
-					@all_cases << @new_case if flights_created == @number_of_flights
+					all_cases << @new_case if flights_created == @number_of_flights
 				end
 			end
-			@all_cases
+			all_cases
 		end
 
 		def create_flight(from, to, dep, arr, price)
@@ -38,9 +37,7 @@ class FlightParser
 		def to_number(time)
 			hour, minutes = time.split(":")
 			hour.to_i * 60 + minutes.to_i
-		end	
-
-		private
+		end
 
 		def empty_line?(line, index)
 			index < 2 || line == "\n"
